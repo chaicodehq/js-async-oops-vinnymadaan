@@ -72,16 +72,87 @@
  *   isLassiStand({});                       // => false
  */
 export function LassiStand(name, city) {
-  // Your code here
+  this.name = name;
+  this.city = city;
+  this.menu = [];
+  this.orders = [];
+  this._nextOrderId = 1
+
+
 }
 
 // Add prototype methods here:
 // LassiStand.prototype.addFlavor = function(flavor, price) { ... }
+LassiStand.prototype.addFlavor = function(flavor, price){
+  if(!flavor){
+    return -1
+  }
+  if(price <= 0){
+    return -1
+  }
+
+  let exists = this.menu.find(item => item.flavor === flavor )
+  if(exists){
+    return -1
+  }
+
+  this.menu.push({flavor : flavor, price : price})
+  return this.menu.length
+}
+
 // LassiStand.prototype.takeOrder = function(customerName, flavor, quantity) { ... }
+LassiStand.prototype.takeOrder = function(customerName, flavor, quantity){
+  let exists = this.menu.find(item => item.flavor === flavor)
+  if(!exists || quantity <= 0 ){
+    return -1
+  }
+
+  let id = 1
+  let order = {
+    id : this._nextOrderId++,
+    customer :customerName,
+    flavor,
+    quantity,
+    total: exists.price * quantity,
+    status :"pending"
+  }
+  this.orders.push(order)
+  
+  return order.id
+}
+
 // LassiStand.prototype.completeOrder = function(orderId) { ... }
+LassiStand.prototype.completeOrder = function(orderId){
+  let order = this.orders.find(item => item.id === orderId);
+  if (!order || order.status === "completed") {
+    return false;
+  }
+  order.status = "completed"
+  return true
+}
+
 // LassiStand.prototype.getRevenue = function() { ... }
+LassiStand.prototype.getRevenue = function(){
+  let total = 0;
+  this.orders.forEach(order => {
+    if(order.status === "completed"){
+    total += order.total
+  }
+})
+return total
+  
+}
+
 // LassiStand.prototype.getMenu = function() { ... }
+LassiStand.prototype.getMenu = function() {
+  return this.menu.map(item => ({ ...item }));
+};
+
 
 export function isLassiStand(obj) {
-  // Your code here
+  if(obj instanceof LassiStand){
+    return true
+  }else{
+    return false
+  }
 }
